@@ -1,69 +1,84 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111827"><meta name="description" content="Clock Plan">
-<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><title>Clock Plan</title>
-<style>
-:root{color-scheme:dark;--bg:#111827;--panel:#1f2937;--line:#475569;--text:#f8fafc;--muted:#cbd5e1;--accent:#38bdf8}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;display:grid;place-items:center;padding:14px}
-main{width:min(100%,480px);display:flex;flex-direction:column;align-items:center;gap:12px}
-.face{width:min(92vw,420px);aspect-ratio:1;border:4px solid var(--line);border-radius:50%;position:relative;background:radial-gradient(circle,#1f2937 0 64%,#172033 65% 100%);overflow:hidden;touch-action:manipulation}
-.hand{position:absolute;left:50%;bottom:50%;transform-origin:50% 100%;border-radius:8px;pointer-events:none;z-index:1}
-.hourhand{height:24%;width:6px;background:var(--text)}.minhand{height:35%;width:4px;background:var(--text)}.sechand{height:39%;width:2px;background:var(--accent)}
-.pin{position:absolute;left:50%;top:50%;width:14px;height:14px;border-radius:50%;background:var(--accent);transform:translate(-50%,-50%);z-index:4;pointer-events:none}
-.hour{position:absolute;transform:translate(-50%,-50%);width:64px;height:58px;border:0;border-radius:13px;background:transparent;color:var(--text);z-index:5;padding:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation}
-.hour.selected{background:#07598599;outline:2px solid var(--accent)}.number{font-size:20px;font-weight:750;line-height:23px;pointer-events:none}.summary{font-size:9px;line-height:11px;max-width:62px;overflow-wrap:anywhere;text-align:center;color:var(--muted);pointer-events:none}
-.panel{position:absolute;z-index:10;inset:13% 8%;border:1px solid var(--line);border-radius:18px;background:#111827f7;padding:10px;display:flex;flex-direction:column;gap:7px;overflow:auto;box-shadow:0 8px 30px #0009}
-.panel[hidden]{display:none!important}.panelhead{display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:14px}.close{border:0;background:transparent;color:var(--text);font-size:24px;padding:3px 8px;cursor:pointer}
-.period{display:flex;gap:6px}.period button{flex:1;padding:8px 5px;border:1px solid var(--line);border-radius:9px;background:#1f2937;color:var(--text);font-size:13px;cursor:pointer}.period button.active{background:var(--accent);color:#082f49;border-color:var(--accent);font-weight:700}
-.task{display:flex;align-items:center;gap:6px;border-bottom:1px solid #334155;padding:5px 0;font-size:12px;min-width:0}.task span{flex:1;min-width:0;overflow-wrap:anywhere}.task.done span{text-decoration:line-through;opacity:.55}.task input{width:19px;height:19px;accent-color:var(--accent)}.task button{border:1px solid var(--line);background:#1f2937;color:var(--text);border-radius:8px;padding:6px;font-size:11px;cursor:pointer}
-.entry{display:flex;gap:6px;margin-top:auto}.entry input{min-width:0;flex:1;border:1px solid var(--line);border-radius:9px;padding:10px;font-size:16px;background:#1f2937;color:var(--text)}.add{border:0;border-radius:9px;padding:8px 12px;background:var(--accent);color:#082f49;font-weight:700;cursor:pointer}
-.clocktime{font-size:19px;font-variant-numeric:tabular-nums}.hint{font-size:12px;color:var(--muted);text-align:center}
-button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-</style></head>
-<body><main>
-<div class="face" aria-label="ساعت عقربه‌ای Clock Plan">
-<div class="hand hourhand" id="hourhand"></div><div class="hand minhand" id="minhand"></div><div class="hand sechand" id="sechand"></div><div class="pin"></div>
-<div id="hours">
-<button class="hour" data-hour="12" style="left:50%;top:9%"><span class="number">۱۲</span><span class="summary"></span></button>
-<button class="hour" data-hour="1" style="left:71%;top:14.5%"><span class="number">۱</span><span class="summary"></span></button>
-<button class="hour" data-hour="2" style="left:86%;top:29%"><span class="number">۲</span><span class="summary"></span></button>
-<button class="hour" data-hour="3" style="left:91%;top:50%"><span class="number">۳</span><span class="summary"></span></button>
-<button class="hour" data-hour="4" style="left:86%;top:71%"><span class="number">۴</span><span class="summary"></span></button>
-<button class="hour" data-hour="5" style="left:71%;top:85.5%"><span class="number">۵</span><span class="summary"></span></button>
-<button class="hour" data-hour="6" style="left:50%;top:91%"><span class="number">۶</span><span class="summary"></span></button>
-<button class="hour" data-hour="7" style="left:29%;top:85.5%"><span class="number">۷</span><span class="summary"></span></button>
-<button class="hour" data-hour="8" style="left:14%;top:71%"><span class="number">۸</span><span class="summary"></span></button>
-<button class="hour" data-hour="9" style="left:9%;top:50%"><span class="number">۹</span><span class="summary"></span></button>
-<button class="hour" data-hour="10" style="left:14%;top:29%"><span class="number">۱۰</span><span class="summary"></span></button>
-<button class="hour" data-hour="11" style="left:29%;top:14.5%"><span class="number">۱۱</span><span class="summary"></span></button>
-</div>
-<section class="panel" id="panel" hidden>
-<div class="panelhead"><span id="paneltitle">برنامه‌های ساعت</span><button class="close" id="close" type="button" aria-label="بستن">×</button></div>
-<div class="period"><button type="button" id="am" class="active">صبح / AM</button><button type="button" id="pm">شب / PM</button></div>
-<div id="tasklist"></div>
-<form class="entry" id="taskform"><input id="taskinput" maxlength="70" placeholder="برنامه جدید..." aria-label="نام برنامه"><button class="add" id="submit" type="submit">افزودن</button></form>
-</section></div>
-<div class="clocktime" id="clocktime"></div><div class="hint">روی عدد ساعت بزن؛ سپس صبح یا شب را انتخاب کن و برنامه‌ات را بنویس.</div>
-</main>
-<script>
-(function(){
-var $=function(id){return document.getElementById(id)},key='clock-plan-v3-data',tasks={},selected=0,period='am',editing=-1;
-try{tasks=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch(e){tasks={}}
-function bucket(){var k=period+'-'+selected;if(!Array.isArray(tasks[k]))tasks[k]=[];return tasks[k]}
-function persist(){try{localStorage.setItem(key,JSON.stringify(tasks))}catch(e){}}
-function refreshFace(){document.querySelectorAll('.hour').forEach(function(b){var n=b.getAttribute('data-hour'),a=(tasks['am-'+n]||[]).concat(tasks['pm-'+n]||[]),done=a.filter(function(x){return x.done}).length;b.querySelector('.summary').textContent=a.length?done+'/'+a.length+' ✓':'';b.classList.toggle('selected',Number(n)===selected)})}
-function render(){var list=$('tasklist');list.innerHTML='';var a=bucket();if(!a.length){var empty=document.createElement('div');empty.className='hint';empty.textContent='برای این ساعت در این نوبت برنامه‌ای ثبت نشده';list.appendChild(empty)}
-a.forEach(function(item,i){var row=document.createElement('div');row.className='task'+(item.done?' done':'');var check=document.createElement('input');check.type='checkbox';check.checked=!!item.done;check.setAttribute('aria-label','انجام شد');check.addEventListener('change',function(){item.done=check.checked;persist();render();refreshFace()});var label=document.createElement('span');label.textContent=item.text;var edit=document.createElement('button');edit.type='button';edit.textContent='ویرایش';edit.addEventListener('click',function(){editing=i;$('taskinput').value=item.text;$('submit').textContent='ذخیره';$('taskinput').focus()});var del=document.createElement('button');del.type='button';del.textContent='حذف';del.addEventListener('click',function(){a.splice(i,1);editing=-1;$('taskinput').value='';$('submit').textContent='افزودن';persist();render();refreshFace()});row.append(check,label,edit,del);list.appendChild(row)})}
-function choosePeriod(p){period=p;editing=-1;$('am').classList.toggle('active',p==='am');$('pm').classList.toggle('active',p==='pm');$('taskinput').value='';$('submit').textContent='افزودن';render()}
-function openHour(n){selected=n;editing=-1;$('paneltitle').textContent='برنامه‌های ساعت '+n;$('panel').hidden=false;choosePeriod(period);refreshFace();$('taskinput').focus()}
-document.querySelectorAll('.hour').forEach(function(b){b.addEventListener('click',function(){openHour(Number(b.getAttribute('data-hour')))})});
-$('am').addEventListener('click',function(){choosePeriod('am')});$('pm').addEventListener('click',function(){choosePeriod('pm')});
-$('taskform').addEventListener('submit',function(e){e.preventDefault();var v=$('taskinput').value.trim();if(!v)return;var a=bucket();if(editing>=0&&a[editing])a[editing].text=v;else a.push({text:v,done:false});editing=-1;$('taskinput').value='';$('submit').textContent='افزودن';persist();render();refreshFace()});
-$('close').addEventListener('click',function(){$('panel').hidden=true;editing=-1});
-function tick(){var d=new Date(),h=d.getHours()%12,m=d.getMinutes(),s=d.getSeconds();$('hourhand').style.transform='translateX(-50%) rotate('+(h*30+m*.5)+'deg)';$('minhand').style.transform='translateX(-50%) rotate('+(m*6+s*.1)+'deg)';$('sechand').style.transform='translateX(-50%) rotate('+(s*6)+'deg)';$('clocktime').textContent=d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
-refreshFace();tick();setInterval(tick,1000);
-if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})})}
-})();
-</script></body></html>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="ساعت برنامه‌ریزی روزانه، ثبت مطالعه و گزارش هفتگی و ماهانه">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./style.css">
+  <title>Clock Plan — برنامه‌ریزی مطالعه</title>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+ <main class="app">
+  <header class="header">
+    <div><div class="eyebrow">CLOCK PLAN</div><h1>ساعت برنامه‌ریزی</h1><p id="dateDisplay" class="date" aria-live="polite">در حال بارگذاری تاریخ…</p></div>
+    <button id="archiveBtn" class="subtle-button" title="دیدن روزهای قبل">📅 آرشیو</button>
+  </header>
+
+  <section class="day-nav" aria-label="انتخاب روز">
+    <button id="prevDay" type="button" aria-label="روز قبل">→</button>
+    <button id="todayBtn" type="button">امروز</button>
+    <button id="nextDay" type="button" aria-label="روز بعد">←</button>
+  </section>
+
+  <section class="clock-card" aria-label="ساعت تعاملی">
+   <div class="clock-box">
+    <svg id="clockSvg" viewBox="0 0 400 400" role="group" aria-label="ساعت، با لمس عدد ساعت می‌توانید برای آن برنامه بنویسید">
+     <circle cx="200" cy="200" r="183" fill="none" stroke="#43546c" stroke-width="5"></circle>
+     <circle cx="200" cy="200" r="183" fill="none" class="progress-arc" id="progressArc" stroke="#37b9f0" stroke-width="8" stroke-linecap="round" transform="rotate(-90 200 200)"></circle>
+     <circle cx="200" cy="200" r="167" class="clock-bg" />
+     <g id="clockNumbers"></g>
+     <line id="hourHand" x1="200" y1="200" x2="200" y2="138" class="hand hour"></line>
+     <line id="minuteHand" x1="200" y1="200" x2="200" y2="95" class="hand minute"></line>
+     <line id="secondHand" x1="200" y1="200" x2="200" y2="85" class="hand second"></line>
+     <circle cx="200" cy="200" r="8" fill="#36b9ee" />
+    </svg>
+    <div class="progress-caption" id="ringText">۰ از ۸ ساعت</div>
+   </div>
+   <div class="current-time" id="digitalTime">۰۰:۰۰:۰۰</div>
+   <div class="clock-hint">روی عدد ساعت بزن و برای آن برنامه بنویس</div>
+   <div class="slot-controls"><span id="selectedHourText">ساعت ۱۲ شب</span><button id="daypartToggle" type="button" class="toggle-btn">تغییر صبح / عصر</button></div>
+  </section>
+
+  <section class="stats" aria-label="آمار مطالعه">
+   <article><span id="dailyTitle">مطالعه امروز</span><strong id="dailyTotal">۰ ساعت</strong></article>
+   <article><span>این هفته</span><strong id="weeklyTotal">۰ ساعت</strong></article>
+   <article><span>این ماه</span><strong id="monthlyTotal">۰ ساعت</strong></article>
+  </section>
+
+  <section class="panel">
+   <div class="panel-heading"><h2>هدف روزانه</h2><label for="goalHours">ساعت</label></div>
+   <div class="goal-row"><input id="goalHours" type="number" min="0.5" max="24" step="0.5" value="8" inputmode="decimal"><span>نوار دور ساعت میزان پیشرفت نسبت به هدف را نشان می‌دهد.</span></div>
+  </section>
+
+  <section class="panel">
+   <div class="panel-heading"><h2>برنامه‌های <span id="taskDayLabel">امروز</span></h2><span class="muted" id="taskCount">۰ برنامه</span></div>
+   <form id="taskForm" autocomplete="off">
+    <div class="form-grid"><label>عنوان برنامه<input required id="taskTitle" maxlength="100" placeholder="مثلاً ریاضی، فصل ۳"></label><label>مدت (دقیقه)<input id="taskMinutes" type="number" required min="1" max="720" value="60" inputmode="numeric"></label></div>
+    <div class="form-footer"><span id="formHourLabel">برای ساعت ۱۲ شب</span><button type="submit" class="primary">+ افزودن برنامه</button></div>
+   </form>
+   <div id="taskList" class="list" aria-live="polite"></div>
+  </section>
+
+  <section class="panel study-panel">
+   <div class="panel-heading"><h2>ثبت مطالعه واقعی</h2><span class="muted">مبنای گزارش و نوار پیشرفت</span></div>
+   <div class="timer" id="timerLabel">۰۰:۰۰:۰۰</div>
+   <div class="timer-actions"><button type="button" id="timerStart" class="primary">▶ شروع مطالعه</button><button type="button" id="timerStop" class="outline" disabled>■ پایان و ثبت</button></div>
+   <form id="studyForm" class="manual-form"><label>یا مدت مطالعه را دستی ثبت کن (دقیقه)<input type="number" id="manualMinutes" min="1" max="1440" inputmode="numeric" placeholder="مثلاً ۹۰" required></label><button class="outline" type="submit">ثبت زمان</button></form>
+   <div id="studyHistory" class="list"></div>
+  </section>
+
+  <section class="panel">
+   <div class="panel-heading"><h2>پشتیبان اطلاعات</h2></div>
+   <p class="small-note">اطلاعات داخل همین مرورگر/اپ ذخیره می‌شود؛ با حذف داده‌های برنامه ممکن است از بین برود. هر چند وقت یک‌بار بکاپ بگیر.</p>
+   <div class="backup-actions"><button type="button" id="exportBtn" class="outline">⬇ خروجی اطلاعات (JSON)</button><label class="outline file-btn">⬆ بازیابی فایل<input id="importFile" type="file" accept="application/json,.json" hidden></label></div>
+  </section>
+  <p id="toast" class="toast" role="status" aria-live="polite"></p>
+  <footer>شروع هر روز جدید: ساعت ۲:۰۰ بامداد · اجرا بدون نیاز به اینترنت پس از اولین بارگذاری</footer>
+ </main>
+</body>
+</html>
